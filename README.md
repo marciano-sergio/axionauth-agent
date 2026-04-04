@@ -1,32 +1,121 @@
 # AxionAuth — AI Agent with Auth0 Token Vault
-## Authorized to Act: Auth0 for AI Agents Hackathon
-**Prize:** $10,000 | **Deadline:** Apr 6, 2026
 
-## What It Does
-AxionAuth is an AI agent that manages multi-service OAuth authentication via Auth0 Token Vault, enabling autonomous agents to securely access external APIs (CRM, calendar, email, WhatsApp) without exposing credentials.
+> **Authorized to act, without exposing tokens.**
+>
+> A secure authentication layer for AI agents that need to call real-world APIs on behalf of users.
 
-## The Problem
-AI agents need to call external APIs on behalf of users. Current approaches either:
-- Store tokens insecurely in plaintext
-- Require user re-authentication for every action
-- Can't rotate/revoke tokens without breaking agent workflows
+## Hackathon
+**Authorized to Act: Auth0 for AI Agents Hackathon**
 
-## Solution: Auth0 Token Vault + AI Agent
-AxionAuth uses Auth0 Token Vault as the secure credential store, so the agent can:
-1. Authenticate users once via OAuth
-2. Store tokens securely in Token Vault
-3. Autonomously call APIs (Gmail, HubSpot, Calendly) using stored tokens
-4. Auto-refresh tokens without user intervention
+## Problem
+AI agents become truly useful only when they can act across external systems:
+- read CRM records,
+- send emails,
+- access calendars,
+- trigger workflows,
+- and operate business tools.
+
+But that creates a serious security problem.
+
+Most agent prototypes either:
+- store OAuth tokens insecurely,
+- require repeated re-authentication,
+- break when tokens expire,
+- or avoid real integrations entirely.
+
+That makes them demos, not production systems.
+
+## Solution
+**AxionAuth** uses **Auth0 + Token Vault** as a secure control layer for autonomous agents.
+
+The user authenticates once. After that, the agent can operate on approved services using securely stored tokens, with revocation and refresh flows handled properly.
+
+This means the agent can act autonomously **without exposing credentials in prompts, code, or logs**.
+
+## What it does
+AxionAuth enables an AI agent to:
+- authenticate a user via OAuth
+- store access tokens in Auth0 Token Vault
+- retrieve and use approved tokens securely
+- refresh tokens without breaking workflows
+- maintain least-privilege access across services
+
+## Example use case
+A sales operations agent that:
+1. reads leads from HubSpot,
+2. sends follow-up emails via Gmail,
+3. checks meeting availability,
+4. books a calendar event,
+5. and updates the CRM —
+all without asking the user to log in again for every step.
+
+## Why this matters
+Agents that cannot securely manage authorization are stuck in a sandbox.
+Agents that can act — safely — become operational software.
+
+AxionAuth is the bridge between:
+- conversational intelligence,
+- secure identity,
+- and real execution.
 
 ## Architecture
-User → Auth0 Login → Token Vault stores token → Agent calls APIs autonomously
+```text
+User
+  ↓
+Auth0 login
+  ↓
+Token Vault stores OAuth credentials securely
+  ↓
+AxionAuth agent retrieves approved tokens
+  ↓
+External APIs (CRM, email, calendar, messaging)
+```
 
-## Use Case
-Sales automation agent that:
-- Reads leads from HubSpot (OAuth via Token Vault)
-- Sends follow-up emails via Gmail (OAuth via Token Vault)  
-- Books meetings via Calendly (OAuth via Token Vault)
-- All without the user logging in repeatedly
+## Core benefits
+- secure token storage
+- no plaintext credentials in agent logic
+- autonomous API execution
+- token refresh support
+- revocation-ready architecture
+- better path to production-grade AI agents
 
-## Tech Stack
-Python, Auth0, Token Vault SDK, Claude Haiku (MCP), FastAPI
+## Tech stack
+- Python
+- Auth0
+- Token Vault
+- FastAPI
+- MCP-compatible agent workflow design
+
+## Repository structure
+```text
+auth0-ai-agent/
+├── README.md
+└── agent.py
+```
+
+## What makes it different
+Most AI agent demos talk about autonomy.
+AxionAuth focuses on the missing layer that actually makes autonomy safe.
+
+It is designed around a simple principle:
+> an agent should never need raw credentials in order to be useful.
+
+## Production relevance
+This pattern is applicable to:
+- sales automation agents
+- executive assistants
+- personal productivity agents
+- internal ops copilots
+- support agents with scoped API access
+
+## Roadmap
+- expand supported OAuth integrations
+- add granular consent / scope controls
+- build audit-friendly action logs
+- add policy enforcement before sensitive actions
+- connect to more business systems
+
+## Author
+**Marciano Sergio**
+
+AI systems builder focused on secure automation, operational workflows, and production-oriented agents.
