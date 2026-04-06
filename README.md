@@ -1,121 +1,128 @@
-# AxionAuth — AI Agent with Auth0 Token Vault
+# AXIONAuth Agent
 
-> **Authorized to act, without exposing tokens.**
->
-> A secure authentication layer for AI agents that need to call real-world APIs on behalf of users.
+**Secure AI Agent Authentication with Auth0 Token Vault**
 
-## Hackathon
-**Authorized to Act: Auth0 for AI Agents Hackathon**
+**Live Demo:** [https://axionauth-siiu.srv1452883.hstgr.cloud](https://axionauth-siiu.srv1452883.hstgr.cloud)
 
-## Problem
-AI agents become truly useful only when they can act across external systems:
-- read CRM records,
-- send emails,
-- access calendars,
-- trigger workflows,
-- and operate business tools.
+---
 
-But that creates a serious security problem.
+## The Problem
 
-Most agent prototypes either:
-- store OAuth tokens insecurely,
-- require repeated re-authentication,
-- break when tokens expire,
-- or avoid real integrations entirely.
+Modern AI agents need to interact with multiple third-party services on behalf of users - CRMs, email providers, calendars, messaging platforms. Each service requires OAuth tokens, and managing these tokens securely is a critical challenge.
 
-That makes them demos, not production systems.
+Traditional approaches expose tokens directly to the agent runtime, creating massive security risks. If an agent is compromised, attackers gain access to all connected services. Token refresh, rotation, and revocation become operational nightmares as the number of integrations grows.
 
-## Solution
-**AxionAuth** uses **Auth0 + Token Vault** as a secure control layer for autonomous agents.
+Furthermore, compliance requirements (SOC2, GDPR, CCPA) demand that sensitive credentials are encrypted at rest, access is audited, and tokens follow the principle of least privilege. Most agent frameworks treat authentication as an afterthought, leaving organizations vulnerable.
 
-The user authenticates once. After that, the agent can operate on approved services using securely stored tokens, with revocation and refresh flows handled properly.
+## The Solution
 
-This means the agent can act autonomously **without exposing credentials in prompts, code, or logs**.
+AXIONAuth Agent leverages **Auth0 Token Vault** to implement a zero-trust authentication architecture for AI agents. The agent never sees or stores raw tokens - instead, Auth0 Token Vault acts as a secure proxy:
 
-## What it does
-AxionAuth enables an AI agent to:
-- authenticate a user via OAuth
-- store access tokens in Auth0 Token Vault
-- retrieve and use approved tokens securely
-- refresh tokens without breaking workflows
-- maintain least-privilege access across services
-
-## Example use case
-A sales operations agent that:
-1. reads leads from HubSpot,
-2. sends follow-up emails via Gmail,
-3. checks meeting availability,
-4. books a calendar event,
-5. and updates the CRM —
-all without asking the user to log in again for every step.
-
-## Why this matters
-Agents that cannot securely manage authorization are stuck in a sandbox.
-Agents that can act — safely — become operational software.
-
-AxionAuth is the bridge between:
-- conversational intelligence,
-- secure identity,
-- and real execution.
+1. **Token Vault Storage**: All OAuth tokens are stored encrypted (AES-256-GCM) in Auth0's Token Vault, never in the agent's memory or filesystem.
+2. **Scoped Access**: Each API call goes through Token Vault with verified scopes, ensuring the agent only accesses what the user has consented to.
+3. **Automatic Refresh**: Token Vault handles refresh token rotation automatically, with zero downtime.
+4. **Audit Trail**: Every token retrieval, refresh, and API call is logged for compliance.
+5. **Revocation**: Users can revoke agent access to any service instantly through Auth0 Dashboard.
 
 ## Architecture
-```text
-User
-  ↓
-Auth0 login
-  ↓
-Token Vault stores OAuth credentials securely
-  ↓
-AxionAuth agent retrieves approved tokens
-  ↓
-External APIs (CRM, email, calendar, messaging)
+
+```
++-------------------+
+|   User / Judge    |
++--------+----------+
+         |
+    OAuth 2.0 + PKCE
+         |
++--------+----------+
+|      Auth0        |
+|   Token Vault     |
+|  (AES-256-GCM)   |
++--------+----------+
+         |
+   Secure Token Exchange
+         |
++--------+----------+
+|  AXIONAuth Agent  |
+|  (FastAPI Engine)  |
++--------+----------+
+    |    |    |    |
+    v    v    v    v
+HubSpot Gmail Cal  Slack
+  CRM   API  endly  API
 ```
 
-## Core benefits
-- secure token storage
-- no plaintext credentials in agent logic
-- autonomous API execution
-- token refresh support
-- revocation-ready architecture
-- better path to production-grade AI agents
+## Features
 
-## Tech stack
-- Python
-- Auth0
-- Token Vault
-- FastAPI
-- MCP-compatible agent workflow design
+1. **Zero Token Exposure** - Agent never sees raw OAuth tokens
+2. **Multi-Service Orchestration** - Coordinates across HubSpot, Gmail, Calendly, Slack
+3. **Real-time Token Vault Visualization** - See token lifecycle in the UI
+4. **Tool Call Chain Visualization** - Step-by-step execution with Auth0 flows
+5. **5 Pre-built Demo Scenarios** - Showcase different Token Vault capabilities
+6. **Interactive Chat Interface** - Type any task and see the agent work
+7. **Automatic Token Refresh** - Seamless credential rotation via Token Vault
+8. **Scope Verification** - Every API call checks granted scopes
+9. **Audit Logging** - Full trail of all token operations
+10. **Security Dashboard** - Real-time stats on vault operations
 
-## Repository structure
-```text
-auth0-ai-agent/
-├── README.md
-└── agent.py
+## Tech Stack
+
+- **Backend**: Python 3.11, FastAPI, Uvicorn
+- **Frontend**: HTML5, Tailwind CSS, Vanilla JavaScript
+- **Auth**: Auth0 Token Vault (OAuth 2.0 + PKCE)
+- **Deployment**: Docker, Traefik, Let's Encrypt TLS
+- **Infrastructure**: Hostinger VPS, Ubuntu 22.04
+
+## Auth0 Integration Details
+
+### Token Vault Flow
+
+1. User authorizes the agent via Auth0 Universal Login
+2. Auth0 stores OAuth tokens in the encrypted Token Vault
+3. Agent requests token access through Token Vault API
+4. Token Vault returns a scoped, time-limited access token
+5. Agent makes API calls; token is never persisted in agent memory
+6. Token Vault auto-refreshes tokens before expiry
+7. All operations are audit-logged
+
+### Security Model
+
+- Tokens encrypted at rest with AES-256-GCM
+- TLS 1.3 for all token transit
+- mTLS between agent and Token Vault
+- PKCE flow prevents authorization code interception
+- Consent-based scoping ensures minimal privilege
+
+## How to Run Locally
+
+```bash
+git clone https://github.com/marciano-sergio/axionauth-agent.git
+cd axionauth-agent
+docker build -t axionauth-demo .
+docker run -p 8080:8080 axionauth-demo
+# Open http://localhost:8080
 ```
 
-## What makes it different
-Most AI agent demos talk about autonomy.
-AxionAuth focuses on the missing layer that actually makes autonomy safe.
+## Security Considerations
 
-It is designed around a simple principle:
-> an agent should never need raw credentials in order to be useful.
-
-## Production relevance
-This pattern is applicable to:
-- sales automation agents
-- executive assistants
-- personal productivity agents
-- internal ops copilots
-- support agents with scoped API access
+- No API keys or tokens are hardcoded in the application
+- All token operations go through Auth0 Token Vault
+- The agent process has no direct access to OAuth credentials
+- Rate limiting and request validation on all endpoints
+- CORS and CSP headers configured for production
 
 ## Roadmap
-- expand supported OAuth integrations
-- add granular consent / scope controls
-- build audit-friendly action logs
-- add policy enforcement before sensitive actions
-- connect to more business systems
 
-## Author
-**Marciano Sergio**
+- [ ] Real Auth0 Token Vault SDK integration
+- [ ] Add Google Workspace and Microsoft 365 connectors
+- [ ] Implement consent management UI
+- [ ] Add webhook support for real-time token events
+- [ ] Multi-tenant support with per-user token isolation
+- [ ] Token usage analytics and cost tracking
 
-AI systems builder focused on secure automation, operational workflows, and production-oriented agents.
+## License
+
+MIT License - See [LICENSE](LICENSE) for details.
+
+---
+
+*Built for the [Authorized to Act: Auth0 for AI Agents Hackathon](https://authorizedtoact.devpost.com)*

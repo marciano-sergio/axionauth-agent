@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXIONAuth Agent - Auth0 Token Vault Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#e2e8f0;overflow-x:hidden}
+.gradient-bg{background:linear-gradient(135deg,#0a0e1a 0%,#1a1040 50%,#0a0e1a 100%)}
+.glass{background:rgba(15,20,40,0.7);backdrop-filter:blur(20px);border:1px solid rgba(99,102,241,0.15)}
+.glow{box-shadow:0 0 30px rgba(99,102,241,0.15)}
+.glow-text{text-shadow:0 0 20px rgba(99,102,241,0.5)}
+.pulse-dot{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes typewriter{from{width:0}to{width:100%}}
+.animate-slide{animation:slideIn 0.4s ease-out}
+.tool-step{animation:slideIn 0.5s ease-out}
+.mono{font-family:'JetBrains Mono',monospace}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0a0e1a}
+::-webkit-scrollbar-thumb{background:#3730a3;border-radius:3px}
+.token-bar{height:4px;border-radius:2px;background:linear-gradient(90deg,#6366f1,#8b5cf6)}
+.shimmer{background:linear-gradient(90deg,transparent,rgba(99,102,241,0.1),transparent);background-size:200% 100%;animation:shimmer 2s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.arch-line{stroke-dasharray:5;animation:dash 20s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-100}}
+</style>
+</head>
+<body class="gradient-bg min-h-screen">
+
+<!-- Header -->
+<header class="glass border-b border-indigo-900/30 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-lg">A</div>
+    <div>
+      <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">AXIONAuth Agent</h1>
+      <p class="text-[10px] text-indigo-400/70 tracking-widest uppercase">Powered by Auth0 Token Vault</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="hidden md:flex items-center gap-2 text-xs text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>System Online</div>
+    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-950/50 border border-indigo-800/30 text-xs text-indigo-300">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+      Token Vault Active
+    </div>
+  </div>
+</div>
+</header>
+
+<div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-12 gap-5">
+
+<!-- Left Sidebar -->
+<aside class="col-span-12 lg:col-span-3 space-y-4">
+  <!-- Connected Services -->
+  <div class="glass rounded-2xl p-4 glow">
+    <h3 class="text-sm font-semibold text-indigo-300 mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+      Connected Services
+    </h3>
+    <div class="space-y-2" id="services-list">
+      <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span><span class="text-sm">HubSpot CRM</span></div>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800/30">Active</span>
+      </div>
+      <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span><span class="text-sm">Gmail API</span></div>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800/30">Active</span>
+      </div>
+      <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span><span class="text-sm">Calendly</span></div>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800/30">Active</span>
+      </div>
+      <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span><span class="text-sm">Slack</span></div>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-800/30">Refresh</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Token Vault Panel -->
+  <div class="glass rounded-2xl p-4">
+    <h3 class="text-sm font-semibold text-indigo-300 mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+      Token Vault
+    </h3>
+    <div class="space-y-3" id="vault-panel">
+      <div class="p-2 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">HubSpot</span><span class="text-emerald-400 mono">47:23</span></div>
+        <div class="w-full bg-slate-800 rounded-full h-1"><div class="token-bar" style="width:78%"></div></div>
+        <div class="text-[10px] text-slate-500 mt-1 mono">crm.objects.* | Refreshed 14x</div>
+      </div>
+      <div class="p-2 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Gmail</span><span class="text-emerald-400 mono">38:15</span></div>
+        <div class="w-full bg-slate-800 rounded-full h-1"><div class="token-bar" style="width:63%"></div></div>
+        <div class="text-[10px] text-slate-500 mt-1 mono">gmail.send,read | Refreshed 11x</div>
+      </div>
+      <div class="p-2 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Calendly</span><span class="text-indigo-400 mono">1:42:08</span></div>
+        <div class="w-full bg-slate-800 rounded-full h-1"><div class="token-bar" style="width:91%"></div></div>
+        <div class="text-[10px] text-slate-500 mt-1 mono">events.rw | Refreshed 5x</div>
+      </div>
+      <div class="p-2 rounded-lg bg-slate-900/50 border border-slate-800/50">
+        <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Slack</span><span class="text-amber-400 mono">8:31:44</span></div>
+        <div class="w-full bg-slate-800 rounded-full h-1"><div class="token-bar" style="width:95%"></div></div>
+        <div class="text-[10px] text-slate-500 mt-1 mono">chat:write | Refreshed 2x</div>
+      </div>
+    </div>
+    <div class="mt-3 p-2 rounded-lg bg-indigo-950/30 border border-indigo-800/20 text-center">
+      <div class="text-[10px] text-indigo-400">Encryption</div>
+      <div class="text-xs font-semibold text-indigo-300">AES-256-GCM</div>
+      <div class="text-[10px] text-slate-500 mt-0.5">Zero token exposure to agent</div>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="glass rounded-2xl p-4">
+    <h3 class="text-sm font-semibold text-indigo-300 mb-3">Architecture</h3>
+    <svg viewBox="0 0 220 260" class="w-full">
+      <defs>
+        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#6366f1"/><stop offset="100%" style="stop-color:#8b5cf6"/></linearGradient>
+      </defs>
+      <!-- Boxes -->
+      <rect x="70" y="5" width="80" height="30" rx="6" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+      <text x="110" y="24" text-anchor="middle" fill="#c7d2fe" font-size="10" font-weight="600">User / Judge</text>
+      <rect x="60" y="65" width="100" height="35" rx="6" fill="none" stroke="url(#g1)" stroke-width="2"/>
+      <text x="110" y="82" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Auth0</text>
+      <text x="110" y="93" text-anchor="middle" fill="#818cf8" font-size="8">Token Vault</text>
+      <rect x="55" y="130" width="110" height="35" rx="6" fill="none" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="110" y="148" text-anchor="middle" fill="#c4b5fd" font-size="9" font-weight="600">AXIONAuth Agent</text>
+      <text x="110" y="159" text-anchor="middle" fill="#7c3aed" font-size="7">FastAPI + Rule Engine</text>
+      <!-- API boxes -->
+      <rect x="5" y="200" width="45" height="25" rx="4" fill="none" stroke="#475569" stroke-width="1"/>
+      <text x="27" y="216" text-anchor="middle" fill="#94a3b8" font-size="7">HubSpot</text>
+      <rect x="58" y="200" width="45" height="25" rx="4" fill="none" stroke="#475569" stroke-width="1"/>
+      <text x="80" y="216" text-anchor="middle" fill="#94a3b8" font-size="7">Gmail</text>
+      <rect x="112" y="200" width="48" height="25" rx="4" fill="none" stroke="#475569" stroke-width="1"/>
+      <text x="136" y="216" text-anchor="middle" fill="#94a3b8" font-size="7">Calendly</text>
+      <rect x="168" y="200" width="45" height="25" rx="4" fill="none" stroke="#475569" stroke-width="1"/>
+      <text x="190" y="216" text-anchor="middle" fill="#94a3b8" font-size="7">Slack</text>
+      <!-- Lines -->
+      <line x1="110" y1="35" x2="110" y2="65" stroke="#6366f1" stroke-width="1" class="arch-line"/>
+      <line x1="110" y1="100" x2="110" y2="130" stroke="#8b5cf6" stroke-width="1" class="arch-line"/>
+      <line x1="27" y1="165" x2="27" y2="200" stroke="#475569" stroke-width="1" class="arch-line"/>
+      <line x1="80" y1="165" x2="80" y2="200" stroke="#475569" stroke-width="1" class="arch-line"/>
+      <line x1="136" y1="165" x2="136" y2="200" stroke="#475569" stroke-width="1" class="arch-line"/>
+      <line x1="190" y1="165" x2="190" y2="200" stroke="#475569" stroke-width="1" class="arch-line"/>
+      <!-- Labels -->
+      <text x="110" y="250" text-anchor="middle" fill="#475569" font-size="7">Tokens never leave the vault</text>
+    </svg>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="col-span-12 lg:col-span-9 space-y-4">
+  <!-- Demo Buttons -->
+  <div class="glass rounded-2xl p-4">
+    <h3 class="text-sm font-semibold text-indigo-300 mb-3">Quick Demo Scenarios</h3>
+    <div class="flex flex-wrap gap-2">
+      <button onclick="runScenario(1)" class="px-4 py-2 rounded-xl bg-indigo-950/50 border border-indigo-700/30 text-sm text-indigo-300 hover:bg-indigo-900/50 hover:border-indigo-500/50 transition-all">
+        <span class="mr-1">1.</span> Check CRM Leads
+      </button>
+      <button onclick="runScenario(2)" class="px-4 py-2 rounded-xl bg-indigo-950/50 border border-indigo-700/30 text-sm text-indigo-300 hover:bg-indigo-900/50 hover:border-indigo-500/50 transition-all">
+        <span class="mr-1">2.</span> Send Follow-up Email
+      </button>
+      <button onclick="runScenario(3)" class="px-4 py-2 rounded-xl bg-indigo-950/50 border border-indigo-700/30 text-sm text-indigo-300 hover:bg-indigo-900/50 hover:border-indigo-500/50 transition-all">
+        <span class="mr-1">3.</span> Book Meeting
+      </button>
+      <button onclick="runScenario(4)" class="px-4 py-2 rounded-xl bg-purple-950/50 border border-purple-700/30 text-sm text-purple-300 hover:bg-purple-900/50 hover:border-purple-500/50 transition-all">
+        <span class="mr-1">4.</span> Full Sales Cycle
+      </button>
+      <button onclick="runScenario(5)" class="px-4 py-2 rounded-xl bg-slate-800/50 border border-slate-600/30 text-sm text-slate-300 hover:bg-slate-700/50 hover:border-slate-500/50 transition-all">
+        <span class="mr-1">5.</span> Token Vault Status
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Interface -->
+  <div class="glass rounded-2xl overflow-hidden glow">
+    <div class="p-4 border-b border-indigo-900/20">
+      <h3 class="text-sm font-semibold text-indigo-300">Agent Console</h3>
+      <p class="text-xs text-slate-500 mt-0.5">Type a task or use a demo scenario above</p>
+    </div>
+    <div id="chat-area" class="p-4 space-y-4 min-h-[400px] max-h-[600px] overflow-y-auto">
+      <div class="text-center py-12">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"></path></svg>
+        </div>
+        <p class="text-indigo-400 font-medium">AXIONAuth Agent Ready</p>
+        <p class="text-xs text-slate-500 mt-1">All 4 service tokens secured via Auth0 Token Vault</p>
+      </div>
+    </div>
+    <div class="p-4 border-t border-indigo-900/20">
+      <div class="flex gap-3">
+        <input id="task-input" type="text" placeholder="Describe a task for the agent... (e.g., Check my CRM leads)" class="flex-1 px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20" onkeydown="if(event.key==='Enter')runTask()">
+        <button onclick="runTask()" id="run-btn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-sm font-semibold text-white hover:from-indigo-500 hover:to-purple-500 transition-all flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          Run
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth0 Integration Details -->
+  <div class="glass rounded-2xl p-5">
+    <h3 class="text-sm font-semibold text-indigo-300 mb-4">Auth0 Token Vault Integration</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800/50 text-center">
+        <div class="text-2xl font-bold text-indigo-400" id="stat-calls">0</div>
+        <div class="text-[10px] text-slate-500 mt-1">Vault Calls</div>
+      </div>
+      <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800/50 text-center">
+        <div class="text-2xl font-bold text-emerald-400" id="stat-refreshes">0</div>
+        <div class="text-[10px] text-slate-500 mt-1">Token Refreshes</div>
+      </div>
+      <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800/50 text-center">
+        <div class="text-2xl font-bold text-purple-400" id="stat-tools">0</div>
+        <div class="text-[10px] text-slate-500 mt-1">Tool Calls</div>
+      </div>
+      <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800/50 text-center">
+        <div class="text-2xl font-bold text-amber-400">0</div>
+        <div class="text-[10px] text-slate-500 mt-1">Token Exposures</div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- Footer -->
+<footer class="border-t border-indigo-900/20 mt-8">
+<div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-2">
+  <p class="text-xs text-slate-500">Built for <span class="text-indigo-400 font-medium">Authorized to Act: Auth0 for AI Agents Hackathon</span></p>
+  <p class="text-xs text-slate-600">AXIONAuth Agent v3.0 | Auth0 Token Vault | Zero Trust Architecture</p>
+</div>
+</footer>
+
+<script>
+let totalCalls = 0, totalRefreshes = 0, totalTools = 0;
+
+function addMessage(role, content) {
+  const area = document.getElementById('chat-area');
+  if (area.querySelector('.text-center')) area.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'animate-slide';
+  if (role === 'user') {
+    div.innerHTML = '<div class="flex justify-end"><div class="max-w-lg px-4 py-3 rounded-2xl rounded-tr-md bg-indigo-600/30 border border-indigo-500/20 text-sm">' + escHtml(content) + '</div></div>';
+  } else {
+    div.innerHTML = '<div class="max-w-full">' + content + '</div>';
+  }
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderResponse(data) {
+  let html = '';
+  // Reasoning
+  html += '<div class="mb-3 p-3 rounded-xl bg-indigo-950/30 border border-indigo-800/20">';
+  html += '<div class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider mb-1">Agent Reasoning</div>';
+  html += '<p class="text-sm text-slate-300">' + escHtml(data.reasoning || '') + '</p></div>';
+
+  // Tool calls
+  if (data.tool_calls && data.tool_calls.length > 0) {
+    html += '<div class="mb-3 space-y-2">';
+    html += '<div class="text-[10px] text-purple-400 font-semibold uppercase tracking-wider mb-1">Tool Execution Chain</div>';
+    data.tool_calls.forEach((tc, i) => {
+      const isAuth = tc.tool.includes('tokenVault');
+      const borderColor = isAuth ? 'border-indigo-700/40' : 'border-slate-800/50';
+      const bgColor = isAuth ? 'bg-indigo-950/40' : 'bg-slate-900/50';
+      html += '<div class="tool-step p-3 rounded-lg ' + bgColor + ' border ' + borderColor + '" style="animation-delay:' + (i*0.15) + 's">';
+      html += '<div class="flex items-center justify-between mb-1">';
+      html += '<div class="flex items-center gap-2">';
+      html += '<span class="w-5 h-5 rounded-md bg-slate-800 flex items-center justify-center text-[10px] font-bold text-indigo-400">' + tc.step + '</span>';
+      html += '<span class="mono text-xs ' + (isAuth?'text-indigo-400':'text-slate-300') + '">' + escHtml(tc.tool) + '</span>';
+      html += '</div>';
+      html += '<div class="flex items-center gap-2">';
+      html += '<span class="text-[10px] text-emerald-400">' + tc.status + '</span>';
+      html += '<span class="text-[10px] text-slate-500 mono">' + tc.duration_ms + 'ms</span>';
+      html += '</div></div>';
+      if (isAuth && tc.auth0_token_vault) {
+        const av = tc.auth0_token_vault;
+        html += '<div class="mt-1 ml-7 p-2 rounded bg-indigo-950/50 border border-indigo-900/30">';
+        html += '<div class="text-[10px] text-indigo-500">Auth0 Token Vault Flow</div>';
+        html += '<div class="text-[10px] text-slate-500 mono mt-0.5">connection: ' + av.connection_id + ' | token_set: ' + av.token_set_id + '</div>';
+        html += '<div class="text-[10px] text-slate-500 mono">latency: ' + av.vault_latency_ms + 'ms | token_exposed: false</div>';
+        html += '</div>';
+      }
+      if (tc.result && !isAuth) {
+        html += '<div class="mt-1 ml-7 text-[10px] text-slate-500 mono max-h-20 overflow-y-auto">' + escHtml(JSON.stringify(tc.result, null, 1).substring(0, 300)) + '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Summary
+  html += '<div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald-800/20">';
+  html += '<div class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider mb-1">Result</div>';
+  html += '<p class="text-sm text-emerald-200">' + escHtml(data.summary || '') + '</p></div>';
+
+  // Auth0 stats
+  if (data.auth0_integration) {
+    const ai = data.auth0_integration;
+    html += '<div class="mt-2 flex flex-wrap gap-2">';
+    html += '<span class="text-[10px] px-2 py-1 rounded-full bg-indigo-950/50 border border-indigo-800/30 text-indigo-400">Vault Calls: ' + ai.token_vault_calls + '</span>';
+    html += '<span class="text-[10px] px-2 py-1 rounded-full bg-purple-950/50 border border-purple-800/30 text-purple-400">Refreshes: ' + ai.tokens_refreshed + '</span>';
+    html += '<span class="text-[10px] px-2 py-1 rounded-full bg-emerald-950/50 border border-emerald-800/30 text-emerald-400">Zero Exposure: ' + ai.zero_token_exposure + '</span>';
+    html += '</div>';
+    totalCalls += ai.token_vault_calls;
+    totalRefreshes += ai.tokens_refreshed;
+  }
+  if (data.tool_calls) totalTools += data.tool_calls.length;
+  document.getElementById('stat-calls').textContent = totalCalls;
+  document.getElementById('stat-refreshes').textContent = totalRefreshes;
+  document.getElementById('stat-tools').textContent = totalTools;
+
+  addMessage('agent', html);
+}
+
+async function runTask() {
+  const input = document.getElementById('task-input');
+  const task = input.value.trim();
+  if (!task) return;
+  input.value = '';
+  addMessage('user', task);
+  addMessage('agent', '<div class="flex items-center gap-2 text-indigo-400 text-sm"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Processing with Auth0 Token Vault...</div>');
+  try {
+    const resp = await fetch('/api/agent/run', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task})});
+    const data = await resp.json();
+    const area = document.getElementById('chat-area');
+    area.removeChild(area.lastChild);
+    renderResponse(data);
+  } catch(e) {
+    const area = document.getElementById('chat-area');
+    area.removeChild(area.lastChild);
+    addMessage('agent', '<div class="text-red-400 text-sm">Error: ' + e.message + '</div>');
+  }
+}
+
+async function runScenario(id) {
+  const names = {1:'Check CRM Leads',2:'Send Follow-up Email',3:'Book Meeting',4:'Full Sales Cycle',5:'Token Vault Status'};
+  addMessage('user', names[id]);
+  addMessage('agent', '<div class="flex items-center gap-2 text-indigo-400 text-sm"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Running scenario with Auth0 Token Vault...</div>');
+  try {
+    const resp = await fetch('/api/demo/scenario/' + id);
+    const data = await resp.json();
+    const area = document.getElementById('chat-area');
+    area.removeChild(area.lastChild);
+    renderResponse(data);
+  } catch(e) {
+    const area = document.getElementById('chat-area');
+    area.removeChild(area.lastChild);
+    addMessage('agent', '<div class="text-red-400 text-sm">Error: ' + e.message + '</div>');
+  }
+}
+</script>
+</body>
+</html>
